@@ -1,1 +1,53 @@
+pipeline {
+    agent any
+    stages {
+        stage('GitClone') {
+            steps {
+                // Get code from a GitHub repository
+                git url: 'https://github.com/Dangler1986/myproject.git', 
+                 branch: 'ci',
+                 credentialsId: 'jenkins githab username pass'
+            }
+        }
+        stage('AddRecordToFile') {
+            steps {
 
+                sh "echo \$(date) >> job.log"
+                sh "exit 1"
+                
+            }
+        }
+        stage("Commit") {
+            steps {
+                sh('''
+                    git branch
+                    git config user.name 'administrator'
+                    git config user.email 'administrator@users.noreply.github.example.com'
+                    git add job.log
+                    git commit -m "Update job.log from Jenkins"
+                ''')
+            }
+        }
+        stage("Push") {
+            environment {
+                GIT_AUTH = credentials('jenkins githab username pass')
+            }
+            steps {
+                sh('''
+                    echo $GIT_AUTH_USR
+                    echo $GIT_AUTH_PSW
+                    git config --local credential.helper "!f() { echo username=\\$GIT_AUTH_USR; echo password=\\$GIT_AUTH_PSW; }; f"
+                    git push origin HEAD:ci
+                ''')
+            }
+        }
+    }
+    post {
+        always {
+            emailext to: "denis.klyuev.job@gmail.com",
+            subject: "Jenkins build was ${currentBuild.currentResult}. Job name: ${env.JOB_NAME}",
+            body: "Status of ${env.JOB_NAME} job is: ${currentBuild.currentResult}, \nBuild URL: ${env.BUILD_URL}",
+            attachLog: true
+        }
+    }
+}
