@@ -13,7 +13,6 @@ pipeline {
             steps {
 
                 sh "echo \$(date) >> job.log"
-                sh "exit 1"
                 
             }
         }
