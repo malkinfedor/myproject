@@ -6,7 +6,7 @@ pipeline {
                 // Get code from a GitHub repository
                 git url: 'https://github.com/malkinfedor/myproject.git', 
                  branch: 'ci',
-                 credentialsId: 'jenkins-user'
+                 credentialsId: 'my-jenkins-user'
             }
         }
         stage('AddRecordToFile') {
@@ -29,7 +29,7 @@ pipeline {
         }
         stage("Push") {
             environment {
-                GIT_AUTH = credentials('jenkins-user')
+                GIT_AUTH = credentials('my-jenkins-user')
             }
             steps {
                 sh('''
