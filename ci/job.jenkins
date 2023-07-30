@@ -11,18 +11,15 @@ pipeline {
         }
         stage('AddRecordToFile') {
             steps {
-
                 sh "echo \$(date) >> job.log"
-                sh "exit 1"
-                
             }
         }
         stage("Commit") {
             steps {
                 sh('''
                     git branch
-                    git config user.name 'administrator'
-                    git config user.email 'administrator@users.noreply.github.example.com'
+                    git config user.name 'my-ci-user'
+                    git config user.email 'my-ci-user@users.noreply.github.example.com'
                     git add job.log
                     git commit -m "Update job.log from Jenkins"
                 ''')
